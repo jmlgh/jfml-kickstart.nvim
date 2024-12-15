@@ -91,7 +91,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -102,7 +102,7 @@ vim.g.have_nerd_font = false
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -614,8 +614,8 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        -- clangd = {},
-        -- gopls = {},
+        clangd = {},
+        gopls = {},
         -- pyright = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
@@ -624,7 +624,7 @@ require('lazy').setup({
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`ts_ls`) will work just fine
-        -- ts_ls = {},
+        ts_ls = {},
         --
 
         lua_ls = {
@@ -845,6 +845,7 @@ require('lazy').setup({
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
       vim.cmd.colorscheme 'tokyonight-night'
+      -- vim.cmd.colorscheme 'zaibatsu'
 
       -- You can configure highlights by doing something like:
       vim.cmd.hi 'Comment gui=none'
@@ -937,7 +938,7 @@ require('lazy').setup({
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
@@ -964,6 +965,59 @@ require('lazy').setup({
     },
   },
 })
+
+-- Custom keymaps
+-- Space + a saves the file
+vim.keymap.set('n', '<Leader>a', ':write<CR>', { silent = true })
+-- Move to first symbol on the line
+vim.keymap.set('n', 'H', '^')
+-- Move to last symbol of the line
+vim.keymap.set('n', 'L', '$')
+-- Shift + q - Quit
+vim.keymap.set('n', 'Q', '<C-W>q')
+-- vv - Makes vertical split
+vim.keymap.set('n', 'vv', '<C-W>v')
+-- ss - Makes horizontal split
+vim.keymap.set('n', 'ss', '<C-W>s')
+-- Indenting in visual mode (tab/shift+tab)
+vim.keymap.set('v', '<Tab>', '>gv')
+vim.keymap.set('v', '<S-Tab>', '<gv')
+-- Move to the end of yanked text after yank and paste
+vim.cmd 'vnoremap <silent> y y`]'
+vim.cmd 'vnoremap <silent> p p`]'
+vim.cmd 'nnoremap <silent> p p`]'
+-- Space + h to clean search highlight
+vim.keymap.set('n', '<Leader>h', ':noh<CR>', { silent = true })
+-- Fixes pasting after visual selection.
+vim.keymap.set('v', 'p', '"_dP')
+
+-- Debugging
+vim.keymap.set('n', '<F5>', ":lua require'dap'.continue()<CR>")
+vim.keymap.set('n', '<F3>', ":lua require'dap'.step_over()<CR>")
+vim.keymap.set('n', '<F2>', ":lua require'dap'.step_into()<CR>")
+vim.keymap.set('n', '<F12>', ":lua require'dap'.step_out()<CR>")
+vim.keymap.set('n', '<leader>b', ":lua require'dap'.toggle_breakpoint()<CR>")
+vim.keymap.set('n', '<leader>B', ":lua require'dap'.set_breakpoint(vim.fn.input('Breakpoint condition: '))<CR>")
+vim.keymap.set('n', '<leader>lp', ":lua require'dap'.set_breakpoint(nil, nil, vim.fn.input('Log point message: '))<CR>")
+vim.keymap.set('n', '<leader>dr', ":lua require'dap'.repl.open()<CR>")
+vim.keymap.set('n', '<leader>dt', ":lua require'dap-go'.debug_test()<CR>")
+
+require('nvim-dap-virtual-text').setup()
+require('dap-go').setup()
+require('dapui').setup()
+
+local dap, dapui = require 'dap', require 'dapui'
+dap.listeners.after.event_initialized['dapui_config'] = function()
+  dapui.open()
+end
+dap.listeners.before.event_terminated['dapui_config'] = function()
+  dapui.close()
+end
+dap.listeners.before.event_exited['dapui_config'] = function()
+  dapui.close()
+end
+
+vim.filetype.add { extension = { templ = 'templ' } }
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
