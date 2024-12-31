@@ -759,6 +759,12 @@ require('lazy').setup({
       local luasnip = require 'luasnip'
       luasnip.config.setup {}
 
+      local has_words_before = function()
+        unpack = unpack or table.unpack
+        local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+        return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match '%s' == nil
+      end
+
       cmp.setup {
         snippet = {
           expand = function(args)
@@ -996,6 +1002,10 @@ require('lazy').setup({
 })
 
 -- Custom keymaps
+-- Source current file
+-- vim.keymap.set('n', '<leader><leader>x', '<cmd>source %<CR>') -- NOT WORKING
+vim.keymap.set('n', '<space>x', ':.lua<CR>')
+vim.keymap.set('v', '<space>x', ':lua<CR>')
 -- Space + a saves the file
 vim.keymap.set('n', '<Leader>a', ':write<CR>', { silent = true })
 -- Move to first symbol on the line
