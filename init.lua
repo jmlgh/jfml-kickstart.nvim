@@ -1006,6 +1006,9 @@ require('lazy').setup({
 -- vim.keymap.set('n', '<leader><leader>x', '<cmd>source %<CR>') -- NOT WORKING
 vim.keymap.set('n', '<space>x', ':.lua<CR>')
 vim.keymap.set('v', '<space>x', ':lua<CR>')
+-- show whitespaces
+vim.keymap.set('n', '<space>ls', ':set listchars=space:_,tab:>~ list<CR>')
+vim.keymap.set('n', '<space>nls', ':set nolist<CR>')
 -- Space + a saves the file
 vim.keymap.set('n', '<Leader>a', ':write<CR>', { silent = true })
 -- Move to first symbol on the line
